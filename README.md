@@ -10,3 +10,16 @@
 - **Code Statistics**: Generates a summary of the code, such as the number of comments and functions, providing useful insights into the code structure.
 - **Rendered Code Block**: The Python code is displayed with enhanced formatting in a web page, making it easy to read.
 - **Self-contained HTML Output**: The generated HTML file is self-contained, meaning it doesn’t rely on external JavaScript or CSS files.
+
+## Usage
+
+You can use `pretty.py` on the command line to convert any Python file to HTML. For example:
+
+```bash
+python3 pretty.py example.py > example.html
+```
+
+For example, if you want to generate a nicely formatted HTML version of the `pretty.py` file itself, you can run the following command:
+
+```bash
+python3 pretty.py pretty.py > pretty.html
