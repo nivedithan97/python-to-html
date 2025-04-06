@@ -13,7 +13,7 @@
 
 ## Usage
 
-You can use `pretty.py` on the command line to convert any Python file to HTML. For example:
+You can use `pretty.py` on the command line to convert any Python file to HTML.
 
 ```bash
 python3 pretty.py example.py > example.html
