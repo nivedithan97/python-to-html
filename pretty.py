@@ -5,9 +5,6 @@ from io import BytesIO
 import io
 import keyword
 
-'''
-i am just writing this as an eg
-'''
 
 """
 The function that takes in all the parameters from the function getmaterials
@@ -48,7 +45,47 @@ def getthehtml(NoL, MlL, MaxV, MinV, MaxCmt, NoD, NoS, NoN, NoR, code, filename)
                     .string {{color: orange}}
                     .number {{color: red}}
                     .operator {{color: purple}}
+                    .collapsible {{
+                            background-color: #777;
+                            color: white;
+                            cursor: pointer;
+                            padding: 10px;
+                            width: 100%;
+                            border: none;
+                            text-align: left;
+                            outline: none;
+                            font-size: 15px;
+                    }}
+                    .active, .collapsible:hover {{
+                        background-color: #555;
+                    }}
+                    .content {{
+                        padding: 0 18px;
+                        display: none;
+                        overflow: hidden;
+                        background-color: #f1f1f1;
+                    }}
+
+                    /* Show the collapsible content when the button is clicked */
+                    .active + .content {{
+                        display: block;
+                    }}
                 </style>
+
+                <script>
+                    var coll = document.getElementsByClassName("collapsible");
+                    for (var i = 0; i < coll.length; i++) {{
+                        coll[i].addEventListener("click", function() {{
+                            this.classList.toggle("active");
+                            var content = this.nextElementSibling;
+                            if (content.style.display === "block") {{
+                                content.style.display = "none";
+                            }} else {{
+                                content.style.display = "block";
+                            }}
+                        }});
+                    }}
+                </script>
             </head>
             <body>
                 <h1>Python code inspector</h1>
@@ -441,6 +478,12 @@ def colouring(f, fl):
         line_number = token.start[0]
         token_start = token.start
         
+        #if the token is a function definition (i.e., 'def' keyword)
+        if token_type == 'keyword' and token_value == 'def':
+            function_name = get_function_name(token, file_contents)  #extract function name (for collapsible block)
+            table_body += f"<button class='collapsible'>{function_name}</button><div class='content'>"
+
+
         # terminate the program once we have reached the end of the file
         if line_number > num_lines:
             break
@@ -474,16 +517,35 @@ def colouring(f, fl):
         else:
             final_string += f"<tr><span id=\'line'>{line_number:<10}</span><span class='{token_type}'>{space_counter}{token_value}</span></tr>"
         current_line = line_number
+
+        if token_type == 'keyword' and token_value == 'return': 
+            table_body += "</div>"
+
     # append the formatted tokens to table_body
     table_body += f"<pre>\n{final_string}</pre>"
     
     return table_body  
 
+def get_function_name(token, file_contents):
+    """
+    Extracts the function name from the token.
+    
+    Parameters:
+        token: the token representing the 'def' keyword
+    
+    Returns:
+        string: the name of the function
+    """
+    # We'll assume that the function name is right after 'def' in the code
+    next_token = next(tokenize.generate_tokens(io.StringIO(file_contents).readline))
+    if next_token.type == tokenize.NAME:  # Function name is the next token after 'def'
+        return next_token.string
+    return "Unnamed Function"
 
 
 if __name__ == '__main__':
-    filename = sys.argv[1]  # to take file name form terminal()
-    #filename = 'pretty.py'
+    #filename = sys.argv[1]  # to take file name form terminal()
+    filename = 'pretty.py'
 
     with open(filename, 'r') as file:
         # global contents, str
